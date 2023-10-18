@@ -24,28 +24,27 @@ func TestNewTransaction(t *testing.T) {
 
 	kind := "email"
 	key := "j@j.com"
-	accountId := uuid.NewV4().String()
-	pixKey, _ := model.NewPixKey(kind, accountDestination, key, accountId)
+	pixKey, _ := model.NewPixKey(kind, accountDestination, key)
 
 	require.NotEqual(t, account.ID, accountDestination.ID)
 
 	amount := 3.10
 	statusTransaction := "pending"
-	transaction, err := model.NewTransaction(account, amount, pixKey, "My description")
+	transaction, err := model.NewTransaction(account, amount, pixKey, "My description", "")
 	//
 	require.Nil(t, err)
 	require.NotNil(t, uuid.FromStringOrNil(transaction.ID))
-	require.Equal(t, transaction.Amount, amount)
-	require.Equal(t, transaction.Status, statusTransaction)
-	require.Equal(t, transaction.Description, "My description")
+	require.Equal(t, amount, transaction.Amount)
+	require.Equal(t, statusTransaction, transaction.Status)
+	require.Equal(t, "My description", transaction.Description)
 	require.Empty(t, transaction.CancelDescription)
 
-	pixKeySameAccount, err := model.NewPixKey(kind, account, key, accountId)
+	pixKeySameAccount, err := model.NewPixKey(kind, account, key)
 
-	_, err = model.NewTransaction(account, amount, pixKeySameAccount, "My description")
+	_, err = model.NewTransaction(account, amount, pixKeySameAccount, "My description", "")
 	require.NotNil(t, err)
 
-	_, err = model.NewTransaction(account, 0, pixKey, "My description")
+	_, err = model.NewTransaction(account, 0, pixKey, "My description", "")
 	require.NotNil(t, err)
 }
 
@@ -64,14 +63,13 @@ func TestModel_ChangeStatusOfATransaction(t *testing.T) {
 
 	kind := "email"
 	key := "j@j.com"
-	accountId := uuid.NewV4().String()
-	pixKey, _ := model.NewPixKey(kind, accountDestination, key, accountId)
+	pixKey, _ := model.NewPixKey(kind, accountDestination, key)
 
 	amount := 3.10
-	transaction, _ := model.NewTransaction(account, amount, pixKey, "My description")
+	transaction, _ := model.NewTransaction(account, amount, pixKey, "My description", "")
 
 	transaction.Complete()
-	require.Equal(t, transaction.Status, model.TransactionCompleted)
+	require.Equal(t, model.TransactionCompleted, transaction.Status)
 
 	transaction.Cancel("Error")
 	require.Equal(t, model.TransactionError, transaction.Status)

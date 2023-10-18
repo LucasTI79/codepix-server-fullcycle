@@ -22,8 +22,7 @@ func TestModel_NewPixKey(t *testing.T) {
 
 	kind := "email"
 	key := "j@j.com"
-	accountId := uuid.NewV4().String()
-	pixKey, err := model.NewPixKey(kind, account, key, accountId)
+	pixKey, err := model.NewPixKey(kind, account, key)
 	require.Nil(t, err)
 
 	require.NotEmpty(t, uuid.FromStringOrNil(pixKey.ID))
@@ -31,9 +30,9 @@ func TestModel_NewPixKey(t *testing.T) {
 	require.Equal(t, pixKey.Status, "active")
 
 	kind = "cpf"
-	_, err = model.NewPixKey(kind, account, key, accountId)
+	_, err = model.NewPixKey(kind, account, key)
 	require.Nil(t, err)
 
-	_, err = model.NewPixKey("nome", account, key, accountId)
+	_, err = model.NewPixKey("nome", account, key)
 	require.NotNil(t, err)
 }
